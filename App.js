@@ -1,68 +1,75 @@
 import { StatusBar } from "expo-status-bar";
+import React, { useRef } from "react";
 import {
   Animated,
   Text,
   View,
-  useRef,
   PanResponder,
   StyleSheet,
   Alert,
+  Dimensions,
 } from "react-native";
 import CustomImage from "./components/Image";
 import AnimatedImage from "./components/AnimatedImage";
 
 export default function App() {
-  // const pan = useRef(new Animated.ValueXY()).current;
+  const pan = useRef(new Animated.ValueXY()).current;
+  // console.log("panResponder", pan.x, pan.y);
 
-  // const panResponder = PanResponder.create({
-  //   onStartShouldSetPanResponder: () => true,
-  //   onPanResponderMove: Animated.event([null, { dx: pan.x, dy: pan.y }]),
-  //   onPanResponderRelease: () => {
-  //     // Perform your desired action here
-  //     Alert.alert("Action", "Image released!");
-  //   },
-  // });
+  const panResponder = PanResponder.create({
+    onStartShouldSetPanResponder: () => true,
+    onPanResponderMove: Animated.event(
+      [
+        null,
+        {
+          dx: pan.x,
+          dy: pan.y,
+        },
+      ],
+      { useNativeDriver: false }
+    ),
+    onPanResponderRelease: (e, gesture) => {
+      // Perform your desired action here
+      // Animated.spring(
+      //   //Step 1
+      //   pan, //Step 2
+      //   {
+      //     toValue: { x: 0, y: 0 },
+      //     //useNativeDriver: true, // <-- Add this
+      //   } //Step 3
+      // ).start();
+      Alert.alert("Action", "Image released!", e, gesture);
+    },
+  });
 
   return (
     <View style={styles.container}>
-      <Text>LYTTE LYTTE LYTTE</Text>
-      <View style={styles.row}>
-        <AnimatedImage
-          source={require("./assets/Mumi.png")}
-          style={{ width: 100, height: 100 }}
-          // style={[styles.foregroundImage, pan.getLayout()]}
-          // {...panResponder.panHandlers}
+      <View style={styles.draggableContainer}>
+        <CustomImage
+          source={require("./assets/tiger-with-books.png")}
+          style={styles.centerImage}
+          onPress={() => Alert.alert("Image pressed 2!")}
         />
-        <AnimatedImage
-          source={require("./assets/Cirkeline.png")}
-          style={{ width: 100, height: 100 }}
-        />
-      </View>
-      <CustomImage
-        source={require("./assets/tiger-with-books.png")}
-        style={styles.backgroundImage}
-      />
-      <View style={styles.row}>
-        <AnimatedImage
-          source={require("./assets/monkey.png")}
-          style={{ width: 100, height: 100 }}
-        />
-        <AnimatedImage
-          source={require("./assets/RasmusKlump.png")}
-          style={{ width: 100, height: 100 }}
-        />
+        <Animated.View
+          {...panResponder.panHandlers} //Step 1
+          style={[pan.getLayout(), styles.circle]}
+        >
+          <CustomImage source={require("./assets/GurliGris.png")} />
+        </Animated.View>
       </View>
       <StatusBar style="auto" />
     </View>
   );
 }
 
+let CIRCLE_RADIUS = 36;
+let Window = Dimensions.get("window");
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
+    //alignItems: "center",
+    //justifyContent: "center",
     backgroundColor: "#FDF295",
   },
   row: {
@@ -75,13 +82,31 @@ const styles = StyleSheet.create({
     // Add other styles as needed
   },
   centerImage: {
-    width: "100%",
-    height: "100%",
+    width: 200,
+    height: 200,
+    alignSelf: "center",
+    //top: 300,
     position: "absolute",
   },
   foregroundImage: {
-    width: 200,
-    height: 200,
+    width: 150,
+    height: 150,
+    top: 80,
+    alignSelf: "center",
     position: "absolute",
+  },
+  draggableContainer: {
+    backgroundColor: "red",
+    position: "absolute",
+    top: Window.height / 2 - CIRCLE_RADIUS,
+    left: Window.width / 2 - CIRCLE_RADIUS,
+  },
+  circle: {
+    position: "absolute",
+    backgroundColor: "#1abc9c",
+    width: CIRCLE_RADIUS * 2,
+    height: CIRCLE_RADIUS * 2,
+    borderRadius: CIRCLE_RADIUS,
+    borderColor: "green",
   },
 });
