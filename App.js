@@ -1,6 +1,13 @@
 import { StatusBar } from "expo-status-bar";
 import React, { useRef, useState } from "react";
-import { Animated, View, PanResponder, StyleSheet, Image } from "react-native";
+import {
+  Animated,
+  View,
+  PanResponder,
+  StyleSheet,
+  Image,
+  Button,
+} from "react-native";
 import TitlesRow from "./components/TitlesRow";
 
 export default function App() {
@@ -29,6 +36,9 @@ export default function App() {
       const backgroundImagePosition = await calculateImagePosition(
         backgroundImageRef
       );
+
+      console.log("foregroundImagePosition", foregroundImagePosition);
+      console.log("backgroundImagePosition", backgroundImagePosition);
 
       if (
         foregroundImagePosition.left >= backgroundImagePosition.left &&
@@ -68,6 +78,11 @@ export default function App() {
     });
   };
 
+  const onButtonClick = () => {
+    setShowTitles(false);
+    setForegroundVisible(true);
+  };
+
   return (
     <View style={styles.container}>
       {showTitles && <TitlesRow />}
@@ -91,6 +106,27 @@ export default function App() {
           />
         </Animated.View>
       )}
+
+      <Image
+        source={require("./assets/Elephant.png")}
+        style={styles.elephantImage}
+      />
+      <Image
+        source={require("./assets/Cirkeline.png")}
+        style={styles.cirkelineImage}
+      />
+      <Image
+        source={require("./assets/monkey.png")}
+        style={styles.monkeyImage}
+      />
+      <Image
+        source={require("./assets/RasmusKlump.png")}
+        style={styles.rasmusImage}
+      />
+      <Image source={require("./assets/Mumi.png")} style={styles.mumiImage} />
+      <View style={styles.buttonContainer}>
+        <Button title="RESET" onPress={onButtonClick} style={styles.button} />
+      </View>
     </View>
   );
 }
@@ -100,12 +136,48 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#FDF295",
   },
+  elephantImage: {
+    width: 100,
+    height: 100,
+    position: "absolute",
+    left: "30%",
+    top: "34%",
+  },
+  cirkelineImage: {
+    width: 100,
+    height: 100,
+    position: "absolute",
+    left: "30%",
+    top: "55%",
+  },
+  monkeyImage: {
+    width: 100,
+    height: 100,
+    position: "absolute",
+    left: "45%",
+    top: "70%",
+  },
+  mumiImage: {
+    width: 100,
+    height: 100,
+    position: "absolute",
+    left: "60%",
+    top: "54%",
+  },
+  rasmusImage: {
+    width: 100,
+    height: 100,
+    position: "absolute",
+    left: "60%",
+    top: "33%",
+  },
   backgroundImage: {
     width: 200,
     height: 200,
     position: "absolute",
     alignSelf: "center",
     top: 300,
+    zIndex: 5,
   },
   foregroundImageContainer: {
     position: "absolute",
@@ -113,6 +185,17 @@ const styles = StyleSheet.create({
     height: 100,
     alignSelf: "center",
     top: 150,
+    zIndex: 6,
+  },
+  button: {
+    position: "absolute",
+    bottom: 0,
+    backgroundColor: "red",
+  },
+  buttonContainer: {
+    position: "absolute",
+    bottom: 0,
+    alignSelf: "center",
   },
   foregroundImage: {
     width: 100,

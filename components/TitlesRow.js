@@ -3,8 +3,6 @@ import { View, StyleSheet } from "react-native";
 import CustomImage from "./Image";
 
 const TitlesRow = ({ source, style, onPress }) => {
-  console.log("hola");
-
   const images = [
     { url: "../assets/gurli_cover_mudpuddle.png", audio: "" },
     { url: "../assets/gurli_cover_vinter.jpeg", audio: "" },
@@ -14,16 +12,18 @@ const TitlesRow = ({ source, style, onPress }) => {
   //TOOD use image.url instead of hardcoded value
   return (
     <View style={styles.container}>
-      {images.map((image) => {
-        return (
-          <CustomImage
-            key={image.url}
-            source={require("../assets/gurli_cover_mudpuddle.png")}
-            style={styles.image}
-            onPress={console.log("here")}
-          />
-        );
-      })}
+      <CustomImage
+        source={require("../assets/gurli_cover_mudpuddle.png")}
+        style={styles.image}
+      />
+      <CustomImage
+        source={require("../assets/gurli_cover_vinter.jpeg")}
+        style={styles.image}
+      />
+      {/* <CustomImage
+        source={require("../assets/gurli_cover-on-sejletur.jpeg")}
+        style={styles.image}
+      /> */}
     </View>
   );
 };
@@ -32,7 +32,7 @@ export default TitlesRow;
 
 const styles = StyleSheet.create({
   container: {
-    top: "10%",
+    top: "8%",
     margin: 10,
     alignContent: "center",
     justifyContent: "center",
