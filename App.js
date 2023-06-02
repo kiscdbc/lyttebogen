@@ -1,20 +1,15 @@
 import { StatusBar } from "expo-status-bar";
-import React, { useRef } from "react";
-import {
-  Animated,
-  Text,
-  View,
-  PanResponder,
-  StyleSheet,
-  Alert,
-  Dimensions,
-} from "react-native";
-import CustomImage from "./components/Image";
-import AnimatedImage from "./components/AnimatedImage";
+import React, { useRef, useState } from "react";
+import { Animated, View, PanResponder, StyleSheet, Image } from "react-native";
+import TitlesRow from "./components/TitlesRow";
 
 export default function App() {
   const pan = useRef(new Animated.ValueXY()).current;
-  // console.log("panResponder", pan.x, pan.y);
+  const gurli = useRef(null);
+  const backgroundImageRef = useRef(null);
+
+  const [isForegroundVisible, setForegroundVisible] = useState(true);
+  const [showTitles, setShowTitles] = useState(false);
 
   const panResponder = PanResponder.create({
     onStartShouldSetPanResponder: () => true,
@@ -28,85 +23,99 @@ export default function App() {
       ],
       { useNativeDriver: false }
     ),
-    onPanResponderRelease: (e, gesture) => {
-      // Perform your desired action here
-      // Animated.spring(
-      //   //Step 1
-      //   pan, //Step 2
-      //   {
-      //     toValue: { x: 0, y: 0 },
-      //     //useNativeDriver: true, // <-- Add this
-      //   } //Step 3
-      // ).start();
-      Alert.alert("Action", "Image released!", e, gesture);
+    onPanResponderRelease: async (e, gesture) => {
+      // Check if the foreground image is on top of the background image
+      const foregroundImagePosition = await calculateImagePosition(gurli);
+      const backgroundImagePosition = await calculateImagePosition(
+        backgroundImageRef
+      );
+
+      if (
+        foregroundImagePosition.left >= backgroundImagePosition.left &&
+        foregroundImagePosition.top >= backgroundImagePosition.top &&
+        foregroundImagePosition.right <= backgroundImagePosition.right &&
+        foregroundImagePosition.bottom <= backgroundImagePosition.bottom
+      ) {
+        // Foreground image is on top of the background image, hide it
+        setForegroundVisible(false);
+        setShowTitles(true);
+      } else {
+        // Foreground image is not on top of the background image, reset its position
+        Animated.spring(pan, {
+          toValue: { x: 0, y: 0 },
+          useNativeDriver: false,
+        }).start();
+      }
     },
   });
 
+  const calculateImagePosition = (imageRef) => {
+    if (!imageRef || !imageRef.current) {
+      return { left: 0, top: 0, right: 0, bottom: 0 };
+    }
+
+    const { current: image } = imageRef;
+
+    return new Promise((resolve) => {
+      image.measure((x, y, width, height, left, top) => {
+        resolve({
+          left,
+          top,
+          right: left + width,
+          bottom: top + height,
+        });
+      });
+    });
+  };
+
   return (
     <View style={styles.container}>
-      <View style={styles.draggableContainer}>
-        <CustomImage
-          source={require("./assets/tiger-with-books.png")}
-          style={styles.centerImage}
-          onPress={() => Alert.alert("Image pressed 2!")}
-        />
+      {showTitles && <TitlesRow />}
+      <Image
+        source={require("./assets/tiger-with-books.png")}
+        style={styles.backgroundImage}
+        ref={backgroundImageRef}
+      />
+      {isForegroundVisible && (
         <Animated.View
-          {...panResponder.panHandlers} //Step 1
-          style={[pan.getLayout(), styles.circle]}
+          ref={gurli}
+          style={[
+            styles.foregroundImageContainer,
+            { transform: [{ translateX: pan.x }, { translateY: pan.y }] },
+          ]}
+          {...panResponder.panHandlers}
         >
-          <CustomImage source={require("./assets/GurliGris.png")} />
+          <Image
+            source={require("./assets/GurliGris.png")}
+            style={styles.foregroundImage}
+          />
         </Animated.View>
-      </View>
-      <StatusBar style="auto" />
+      )}
     </View>
   );
 }
 
-let CIRCLE_RADIUS = 36;
-let Window = Dimensions.get("window");
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    //alignItems: "center",
-    //justifyContent: "center",
     backgroundColor: "#FDF295",
   },
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    width: "100%",
-    marginHorizontal: 20,
-    paddingHorizontal: 200,
-    // Add other styles as needed
-  },
-  centerImage: {
+  backgroundImage: {
     width: 200,
     height: 200,
-    alignSelf: "center",
-    //top: 300,
     position: "absolute",
+    alignSelf: "center",
+    top: 300,
+  },
+  foregroundImageContainer: {
+    position: "absolute",
+    width: 100,
+    height: 100,
+    alignSelf: "center",
+    top: 150,
   },
   foregroundImage: {
-    width: 150,
-    height: 150,
-    top: 80,
-    alignSelf: "center",
-    position: "absolute",
-  },
-  draggableContainer: {
-    backgroundColor: "red",
-    position: "absolute",
-    top: Window.height / 2 - CIRCLE_RADIUS,
-    left: Window.width / 2 - CIRCLE_RADIUS,
-  },
-  circle: {
-    position: "absolute",
-    backgroundColor: "#1abc9c",
-    width: CIRCLE_RADIUS * 2,
-    height: CIRCLE_RADIUS * 2,
-    borderRadius: CIRCLE_RADIUS,
-    borderColor: "green",
+    width: 100,
+    height: 100,
   },
 });
