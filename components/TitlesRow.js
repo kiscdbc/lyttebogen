@@ -11,10 +11,7 @@ const TitlesRow = ({ source, style, onPress }) => {
     { url: "../assets/gurli_cover-on-sejletur.jpeg", audio: "" },
   ];
 
-  console.log(images[0].url);
-  console.log(images[1].url);
-  console.log(images[2].url);
-
+  //TOOD use image.url instead of hardcoded value
   return (
     <View style={styles.container}>
       {images.map((image) => {
