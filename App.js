@@ -1,6 +1,7 @@
 import { StatusBar } from "expo-status-bar";
 import React, { useRef, useState } from "react";
 import { Animated, View, PanResponder, StyleSheet, Image } from "react-native";
+import TitlesRow from "./components/TitlesRow";
 
 export default function App() {
   const pan = useRef(new Animated.ValueXY()).current;
@@ -8,6 +9,7 @@ export default function App() {
   const backgroundImageRef = useRef(null);
 
   const [isForegroundVisible, setForegroundVisible] = useState(true);
+  const [showTitles, setShowTitles] = useState(false);
 
   const panResponder = PanResponder.create({
     onStartShouldSetPanResponder: () => true,
@@ -36,6 +38,7 @@ export default function App() {
       ) {
         // Foreground image is on top of the background image, hide it
         setForegroundVisible(false);
+        setShowTitles(true);
       } else {
         // Foreground image is not on top of the background image, reset its position
         Animated.spring(pan, {
@@ -67,6 +70,7 @@ export default function App() {
 
   return (
     <View style={styles.container}>
+      {showTitles && <TitlesRow />}
       <Image
         source={require("./assets/tiger-with-books.png")}
         style={styles.backgroundImage}
@@ -108,7 +112,7 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     alignSelf: "center",
-    top: 200,
+    top: 150,
   },
   foregroundImage: {
     width: 100,
