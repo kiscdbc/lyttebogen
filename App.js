@@ -37,9 +37,6 @@ export default function App() {
         backgroundImageRef
       );
 
-      console.log("foregroundImagePosition", foregroundImagePosition);
-      console.log("backgroundImagePosition", backgroundImagePosition);
-
       if (
         foregroundImagePosition.left >= backgroundImagePosition.left &&
         foregroundImagePosition.top >= backgroundImagePosition.top &&
@@ -106,24 +103,26 @@ export default function App() {
           />
         </Animated.View>
       )}
-
       <Image
         source={require("./assets/Elephant.png")}
-        style={styles.elephantImage}
+        style={[styles.elephantImage, { display: showTitles ? "none" : "" }]}
       />
       <Image
         source={require("./assets/Cirkeline.png")}
-        style={styles.cirkelineImage}
+        style={[styles.cirkelineImage, { display: showTitles ? "none" : "" }]}
       />
       <Image
         source={require("./assets/monkey.png")}
-        style={styles.monkeyImage}
+        style={[styles.monkeyImage, { display: showTitles ? "none" : "" }]}
       />
       <Image
         source={require("./assets/RasmusKlump.png")}
-        style={styles.rasmusImage}
+        style={[styles.rasmusImage, { display: showTitles ? "none" : "" }]}
       />
-      <Image source={require("./assets/Mumi.png")} style={styles.mumiImage} />
+      <Image
+        source={require("./assets/Mumi.png")}
+        style={[styles.mumiImage, { display: showTitles ? "none" : "" }]}
+      />
       <View style={styles.buttonContainer}>
         <Button title="RESET" onPress={onButtonClick} style={styles.button} />
       </View>
